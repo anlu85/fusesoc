@@ -33,7 +33,7 @@ import logging
 
 from fusesoc.config import Config
 from fusesoc.coremanager import DependencyError
-from fusesoc.fusesoc import Fusesoc
+from fusesoc.fusesoc_fusesoc import Fusesoc
 from fusesoc.librarymanager import Library
 
 logger = logging.getLogger(__name__)
@@ -625,7 +625,7 @@ def get_parser():
     parser_library_add.add_argument(
         "--sync-type",
         help="The provider type for the library. Defaults to 'git'.",
-        choices=["git", "local"],
+        choices=["git", "local", "url"],
         dest="sync-type",
     )
     parser_library_add.add_argument(

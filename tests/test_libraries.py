@@ -12,7 +12,7 @@ from argparse import Namespace
 from test_common import cache_root, cores_root, library_root
 
 from fusesoc.config import Config
-from fusesoc.fusesoc import Fusesoc
+from fusesoc.fusesoc_fusesoc import Fusesoc
 from fusesoc.librarymanager import Library
 
 build_root = "test_build_root"

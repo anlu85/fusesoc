@@ -4,9 +4,12 @@
 
 import logging
 import os.path
+from re import U
 import shutil
 import sys
 import tarfile
+from tkinter import N
+from urllib import request
 import zipfile
 
 logger = logging.getLogger(__name__)
@@ -25,6 +28,46 @@ _HAS_TAR_FILTER = hasattr(tarfile, "tar_filter")  # Requires Python 3.12
 
 
 class Url(Provider):
+    @staticmethod
+    def _checkout_library(library, update=False):
+        with urllib.urlopen(library.sync_uri) as response:
+            if not update and library.name == library.sync_uri.rstrip('/').split('/')[-1]:
+                content_disposition = response.headers.get('Content-Disposition')
+                if content_disposition:
+                    import re
+                    match = re.search(r'filename="([^"]+)"', content_disposition)
+                    if match:
+                        name = match.group(1).removesuffix(".zip")
+                        library.location = library.location.replace(library.name, name)
+                        library.name = name
+
+            import io
+            data = response.read()
+            buffer = io.BytesIO(data)
+            with zipfile.ZipFile(buffer) as zip_archive:
+                if update:
+                    import shutil
+                    shutil.rmtree(library.location)
+                zip_archive.extractall(library.location)
+
+    @staticmethod
+    def init_library(library):
+        try:
+            logger.info(f"Downloading library from {library.sync_uri}...")
+            Url._checkout_library(library)
+            logger.info(f"Libary stored at {library.location}")
+        except Exception as e:
+            raise RuntimeError(str(e))
+
+    @staticmethod
+    def update_library(library):
+        try:
+            logger.info(f"Downloading library from {library.sync_uri}...")
+            Url._checkout_library(library, update=True)
+            logger.info(f"Libary stored at {library.location}")
+        except Exception as e:
+            raise RuntimeError(str(e))
+
     def _checkout(self, local_dir):
         url = self.config.get("url")
         logger.info("Downloading...")

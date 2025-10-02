@@ -6,7 +6,7 @@ import os
 import tempfile
 
 from fusesoc.config import Config
-from fusesoc.fusesoc import Fusesoc
+from fusesoc.fusesoc_fusesoc import Fusesoc
 
 build_root = "test_build_root"
 
